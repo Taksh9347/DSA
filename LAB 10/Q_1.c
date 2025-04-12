@@ -6,7 +6,7 @@ void Bubble_sort(int *arr,int n)
     {
         for(int j=i+1;j<n;j++)
         {
-            if(arr[i]>arr[j])
+            if(arr[i]>arr[j]) // 3 4 1 2 8 9
             {
                 temp=arr[i];
                 arr[i]=arr[j];

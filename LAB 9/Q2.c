@@ -112,8 +112,8 @@ int main()
     printf("4. Delete at rear\n");
     printf("5. Display\n");
     printf("6. Exit\n");
-
-    while (1)
+    int flag = 1;
+    while (flag)
     {
         int choice, data;
         printf("Enter Choice: ");
@@ -148,9 +148,11 @@ int main()
             case 6:
                 printf("Exiting..\n");
                 return 0;
+                break;
 
             default:
                 printf("Invalid choice, try again.\n");
+                break;
         }
     }
     return 0;

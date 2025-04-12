@@ -8,7 +8,7 @@ void Selection_Sort(int *arr,int n)
         max_indx = i;
         for(int j=i+1;j<n;j++)
         {
-            if(arr[j]>arr[max_indx])
+            if(arr[j]>arr[max_indx])  // 2 5 6 1 8 4
                 max_indx = j;
         }
         temp = arr[i];

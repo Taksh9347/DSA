@@ -5,7 +5,7 @@ int Partition(int *arr,int start, int end)
     int i=start;
     int j=end;
     int temp;
-    while(i<j)
+    while(i<j)  // 4 6 7 5 1 2 3
     {
         while(pivot >= arr[i] && i <= end-1) // find indx of first greatest element from left
         {
