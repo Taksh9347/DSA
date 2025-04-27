@@ -127,6 +127,7 @@ void search(int val, int *pos, struct Node *myNode)
 {
     if (!myNode)
     {
+        printf("Key not found\n");
         return;
     }
 
@@ -247,10 +248,10 @@ void borrowFromNext(struct Node *node, int idx)
 
 void deleteFromLeaf(struct Node *node, int idx)
 {
+    // Shift only values, not links (leaf nodes don't use links)
     for (int i = idx; i < node->count; i++)
     {
         node->val[i] = node->val[i + 1];
-        node->link[i] = node->link[i + 1];
     }
     node->count--;
 }
@@ -280,9 +281,18 @@ void deleteFromNonLeaf(struct Node *node, int idx)
 void deleteVal(struct Node *node, int k)
 {
     int idx;
-    for (idx = 1; idx <= node->count && node->val[idx] < k; ++idx)
-        ;
 
+    // Debug print
+    printf("Checking node with keys: ");
+    for (int i = 1; i <= node->count; i++) {
+        printf("%d ", node->val[i]);
+    }
+    printf("\n");
+
+    // Find the index of the key
+    for (idx = 1; idx <= node->count && node->val[idx] < k; ++idx);
+
+    // If key is found
     if (idx <= node->count && node->val[idx] == k)
     {
         if (!node->link[0])
@@ -293,43 +303,45 @@ void deleteVal(struct Node *node, int k)
         {
             deleteFromNonLeaf(node, idx);
         }
+        return;
     }
-    else
+
+    // If key is not found and we're at a leaf node
+    if (!node->link[0])
     {
-        if (!node->link[0])
+        printf("The key %d is not present in the tree\n", k);
+        return;
+    }
+
+    // Whether the key is possibly in the last child
+    bool flag = ((idx == node->count + 1) ? true : false);
+
+    // If child to descend into has less than MIN keys, fix it
+    if (node->link[idx - 1]->count < MIN)
+    {
+        if (idx > 1 && node->link[idx - 2]->count >= MIN)
         {
-            printf("The key %d is not present in the tree\n", k);
-            return;
+            borrowFromPrev(node, idx - 1);
         }
-
-        bool flag = ((idx == node->count + 1) ? true : false);
-
-        if (node->link[idx - 1]->count < MIN)
+        else if (idx <= node->count && node->link[idx]->count >= MIN)
         {
-            if (idx > 1 && node->link[idx - 2]->count >= MIN)
-            {
-                borrowFromPrev(node, idx - 1);
-            }
-            else if (idx <= node->count && node->link[idx]->count >= MIN)
-            {
-                borrowFromNext(node, idx - 1);
-            }
+            borrowFromNext(node, idx - 1);
+        }
+        else
+        {
+            if (idx != node->count + 1)
+                mergeNodes(node, idx - 1);
             else
             {
-                if (idx != node->count + 1)
-                    mergeNodes(node, idx - 1);
-                else
-                    mergeNodes(node, idx - 2);
-                if (idx != node->count + 1)
-                    deleteVal(node->link[idx - 1], k);
-                else
-                    deleteVal(node->link[idx - 2], k);
-                return;
+                mergeNodes(node, idx - 2);
+                idx--; // this is **CRUCIAL** to avoid invalid memory access
             }
         }
-
-        deleteVal(node->link[idx - 1], k);
     }
+
+    // Recurse only if the root still exists
+    if (root)
+        deleteVal(node->link[idx - 1], k);
 }
 
 void deleteKey(int k)
@@ -361,13 +373,13 @@ int main()
     insert(5), insert(15), insert(25), insert(28), insert(31), insert(35), insert(45), insert(55), insert(65);
     while (1)
     {
-        printf("\n1. Insert\n2. Search\n3. Display\n4. Traversal\n5. Delete \n6.Exit\nEnter your choice: ");
+        printf("\n1. Insert\n2. Search\n3. Traversal\n4. Delete \n5. Exit\nEnter your choice: ");
         scanf("%d", &ch);
 
         switch (ch)
         {
         case 1:
-            printf("Enter your input: ");
+            printf("Enter your data of key to be inserted : ");
             scanf("%d", &val);
             insert(val);
             break;
@@ -377,17 +389,18 @@ int main()
             int pos;
             search(val, &pos, root);
             break;
-        case 4:
+        case 3:
             printf("B-Tree traversal: ");
             traversal(root);
             printf("\n");
             break;
-        case 6:
+        case 5:
+            printf("Exiting..");
             exit(0);
         default:
             printf("Invalid option\n");
             break;
-        case 5:
+        case 4:
             printf("Enter the element to delete: ");
             scanf("%d", &val);
             deleteKey(val);

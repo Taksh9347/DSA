@@ -2,17 +2,21 @@
 void Bubble_sort(int *arr,int n)
 {
     int temp;
-    for(int i=0;i<n;i++)
+    for(int i=0;i<n-1;i++)
     {
-        for(int j=i+1;j<n;j++)
+        int swapped=0;
+        for(int j=0;j<n-i-1;j++)
         {
-            if(arr[i]>arr[j]) // 3 4 1 2 8 9
+            if(arr[j]>arr[j+1]) // 3 4 1 2 8 9
             {
-                temp=arr[i];
-                arr[i]=arr[j];
-                arr[j]=temp;
+                temp=arr[j];
+                arr[j]=arr[j+1];
+                arr[j+1]=temp;
+                swapped=1;
             }
         }
+        if(!swapped)
+            break;
     }
 }
 int main()
